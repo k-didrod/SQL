@@ -8,8 +8,8 @@ SQL> set pagesize 200; -> pagesize 를 200으로 함
 위의 설정은 편하게 보기위하여 설정하는것 숫자값은 변동 가능
 
 
-select절	: 검색하고자 하는 탈럼명
-from절	: table명
+select절   : 검색하고자 하는 탈럼명
+from절     : table명
 
 
 
