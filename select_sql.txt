@@ -1,0 +1,117 @@
+1. 구조 검색법 
+    - desc
+        ex) SQL> desx emp;
+            Name                    Null?    Type
+            ----------------------- -------- ----------------
+            EMPNO                   NOT NULL NUMBER(4)
+            ENAME                            VARCHAR2(10)
+            JOB                              VARCHAR2(9)
+            MGR                              NUMBER(4)
+            HIREDATE                         DATE
+            SAL                              NUMBER(7,2)
+            COMM                             NUMBER(7,2)
+            DEPTNO                           NUMBER(2)
+
+2. emp table의 사번(empno)과 이름(ename)만 검색
+    SQL> select empno, ename from emp;
+            EMPNO ENAME
+        ---------- ------------
+              7369 SMITH
+              7499 ALLEN
+              7521 WARD
+              7566 JONES
+              7654 MARTIN
+              7698 BLAKE
+              7782 CLARK
+              7839 KING
+              7844 TURNER
+              7900 JAMES
+              7902 FORD
+              7934 MILLER
+
+3. emp table의 검색시 칼럼명 empno를 사번이란 별칭으로 검색 
+    SQL> select empno 사번 from emp;
+            사번
+      ----------
+            7369
+            7499
+            7521
+            7566
+            7654
+            7698
+            7782
+            7839
+            7844
+            7900
+            7902
+            7934
+
+4. 부서번호 검색시 중복 데이터 제거후 검색 
+    -- 키워드 : 중복제거 키워드 - distinct
+	-- 사원들이 소속된 부서 번호(deptno)만 검색
+        
+        SQL> select deptno from emp;
+                DEPTNO
+            ----------
+                    20
+                    30
+                    30
+                    20
+                    30
+                    30
+                    10
+                    10
+                    30
+                    30
+                    20
+                    10
+
+        SQL> select distinct deptno from emp;
+                DEPTNO
+            ----------
+                    30
+                    20
+                    10
+
+5. 데이터를 오름차순(asc)으로 검색하기(순서 정렬)
+    -- 키워드 : 정렬 키워드 - order by
+    -- asc : 오름차순, desc : 내림차순
+    -- deptno 를 오름차순 또는 내림차순 순으로 나열하시오
+
+        SQL> select * from emp order by deptno asc;
+                EMPNO ENAME                JOB                       MGR HIREDATE        SAL       COMM     DEPTNO
+            ---------- -------------------- ------------------ ---------- -------- ---------- ---------- ----------
+                7839 KING                 PRESIDENT                     81/11/17       5000                    10
+                7782 CLARK                MANAGER                  7839 81/06/09       2450                    10
+                7934 MILLER               CLERK                    7782 82/01/23       1300                    10
+                7902 FORD                 ANALYST                  7566 81/12/03       3000                    20
+                7369 SMITH                CLERK                    7902 80/12/17        800                    20
+                7566 JONES                MANAGER                  7839 81/04/02       2975                    20
+                7900 JAMES                CLERK                    7698 81/12/03        950                    30
+                7844 TURNER               SALESMAN                 7698 81/09/08       1500          0         30
+                7654 MARTIN               SALESMAN                 7698 81/09/28       1250       1400         30
+                7521 WARD                 SALESMAN                 7698 81/02/22       1250        500         30
+                7499 ALLEN                SALESMAN                 7698 81/02/20       1600        300         30
+                7698 BLAKE                MANAGER                  7839 81/05/01       2850                    30
+
+        SQL> select * from emp order by deptno desc;
+                 EMPNO ENAME                JOB                       MGR HIREDATE        SAL       COMM     DEPTNO
+            ---------- -------------------- ------------------ ---------- -------- ---------- ---------- ----------
+                7698 BLAKE                MANAGER                  7839 81/05/01       2850                    30
+                7900 JAMES                CLERK                    7698 81/12/03        950                    30
+                7844 TURNER               SALESMAN                 7698 81/09/08       1500          0         30
+                7654 MARTIN               SALESMAN                 7698 81/09/28       1250       1400         30
+                7521 WARD                 SALESMAN                 7698 81/02/22       1250        500         30
+                7499 ALLEN                SALESMAN                 7698 81/02/20       1600        300         30
+                7902 FORD                 ANALYST                  7566 81/12/03       3000                    20
+                7566 JONES                MANAGER                  7839 81/04/02       2975                    20
+                7369 SMITH                CLERK                    7902 80/12/17        800                    20
+                7934 MILLER               CLERK                    7782 82/01/23       1300                    10
+                7839 KING                 PRESIDENT                     81/11/17       5000                    10
+                7782 CLARK                MANAGER                  7839 81/06/09       2450                    10
+
+    -- order by 절 관련 부가 설명
+        	select sal from emp;			    	- 오름 차순
+		    select sal from emp order by sal;		- 오름 차순
+		    select sal from emp order by sal asc;	- 오름 차순
+		    select sal from emp order by sal desc;	- 내림 차순
