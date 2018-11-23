@@ -8,13 +8,12 @@ SQL> set pagesize 200; -> pagesize 를 200으로 함
 위의 설정은 편하게 보기위하여 설정하는것 숫자값은 변동 가능
 
 
-select -> 볼것이다.
-* -> 전체를
-form -> 어떤것을?
-tab -> table에 들어 있는것을
+select절   : 검색하고자 하는 탈럼명
+from절     : table명
 
 
-SQL> select * form tab; -> table이 무엇이 있는지 확인가능
+
+SQL> select * form tab;
 
 
 TNAME                                                        TABTYPE         CLUSTERID
