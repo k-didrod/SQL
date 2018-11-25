@@ -1,0 +1,300 @@
+﻿1. 입사일(date 타입의 hiredate) 검색, date 타입은 정렬가능 따라서 경력자(입사일이 오래된 직원)부터 검색
+
+    SQL> select hiredate 입사일 from emp order by hiredate asc;
+
+         입사일
+        --------
+        80/12/17
+        81/02/20
+        81/02/22
+        81/04/02
+        81/05/01
+        81/06/09
+        81/09/08
+        81/09/28
+        81/11/17
+        81/12/03
+        81/12/03
+        82/01/23
+
+-- *** 연산식 ***
+2. emp table의 모든 직원명(ename), 급여(sal), 연봉(sal*12) 검색
+    -- 단 sal 컴럼값은 comm을 제외한 sal만으로 연봉 검색
+
+    SQL> select ename 직원명, sal 급여, sla*12 연봉 from emp;
+
+        직원명                     급여       연봉
+        -------------------- ---------- ----------
+        SMITH                       800       9600
+        ALLEN                      1600      19200
+        WARD                       1250      15000
+        JONES                      2975      35700
+        MARTIN                     1250      15000
+        BLAKE                      2850      34200
+        CLARK                      2450      29400
+        KING                       5000      60000
+        TURNER                     1500      18000
+        JAMES                       950      11400
+        FORD                       3000      36000
+        MILLER                     1300      15600    
+
+
+3. 모든 직원의 연봉 검색(sal *12 + comm) 검색
+
+    SQL> select ename 직원명, sal*12+comm from emp;
+
+        직원명               SAL*12+COMM
+        -------------------- -----------
+        SMITH
+        ALLEN                      19500
+        WARD                       15500
+        JONES
+        MARTIN                     16400
+        BLAKE
+        CLARK
+        KING
+        TURNER                     18000
+        JAMES
+        FORD
+        MILLER
+
+
+-- *** 조건식 ***
+-- where
+4. comm이 null인 사원에 대한 검색(ename, comm)
+
+    SQL> select ename, comm from emp where comm is null;
+
+        ENAME                      COMM
+        -------------------- ----------
+        SMITH
+        JONES
+        BLAKE
+        CLARK
+        KING
+        JAMES
+        FORD
+        MILLER
+
+5. comm이 null이 아닌 사원에 대한 검색(ename, comm)
+
+    SQL> select ename, comm from emp where comm is not null;
+
+        ENAME                      COMM
+        -------------------- ----------
+        ALLEN                       300
+        WARD                        500
+        MARTIN                     1400
+        TURNER                        0
+
+
+6. ename, 전체연봉... comm 포함 연봉 검색
+    -- nvl(null값 보유 컬럼명, null인경우 변환하고자하는 기본값)
+	
+
+    SQL> select ename, sal*12, nvl(comm,0), sal*12+comm from emp;
+
+        ENAME                    SAL*12 NVL(COMM,0) SAL*12+COMM
+        -------------------- ---------- ----------- -----------
+        SMITH                      9600           0
+        ALLEN                     19200         300       19500
+        WARD                      15000         500       15500
+        JONES                     35700           0
+        MARTIN                    15000        1400       16400
+        BLAKE                     34200           0
+        CLARK                     29400           0
+        KING                      60000           0
+        TURNER                    18000           0       18000
+        JAMES                     11400           0
+        FORD                      36000           0
+        MILLER                    15600           0
+
+7. emp table에서 deptno 값이 20인(조건식) 직원 정보 모두 출력하기 
+	
+    SQL> select ename, deptno from where deptno=20;
+
+        ENAME                    DEPTNO
+        -------------------- ----------
+        SMITH                        20
+        JONES                        20
+        FORD                         20
+
+8. emp table에서 ename이 smith(SMITH)에 해당하는 deptno값 검색
+    -- 문자형 표현 : ' '
+    -- * 데이터는 대소문자 매우매우 중요
+
+    SQL> select * from emp where ename = 'SMITH';
+        
+        EMPNO ENAME                JOB                       MGR HIREDATE        SAL       COMM     DEPTNO
+    ---------- -------------------- ------------------ ---------- -------- ---------- ---------- ----------
+        7369 SMITH                CLERK                    7902 80/12/17        800                    20
+
+
+
+9. sal가 900이상(>=)인 직원들의 이름(ename), sal 검색
+
+    SQL> select ename 이름, sal 급여 from emp where sal >= 900 order by sal desdc;
+
+        이름                       급여
+        -------------------- ----------
+        KING                       5000
+        FORD                       3000
+        JONES                      2975
+        BLAKE                      2850
+        CLARK                      2450
+        ALLEN                      1600
+        TURNER                     1500
+        MILLER                     1300
+        WARD                       1250
+        MARTIN                     1250
+        JAMES                       950
+
+
+
+10. deptno가 10이고(and) job이 메니저인 사원이름 검색 
+    -- 조건식 두가지 모두 true인 경우 and 연산자 활용 
+
+    SQL> select ename 이름, job, deptno from emp where deptno=10 and job ='MANAGER';
+
+        이름                 JOB                    DEPTNO
+        -------------------- ------------------ ----------
+        CLARK                MANAGER                    10
+
+11. ?deptno가 10이거나(or) job이 메니저(MANAGER)인 사원이름(ename) 검색
+    -- or 연산자
+	
+    SQL> select ename, deptno, job from emp where deptno = 10 or job = 'MANAGER';
+
+        ENAME                    DEPTNO JOB
+        -------------------- ---------- ------------------
+        JONES                        20 MANAGER
+        BLAKE                        30 MANAGER
+        CLARK                        10 MANAGER
+        KING                         10 PRESIDENT
+        MILLER                       10 CLERK
+
+
+12. deptno가 10이 아닌 모든 사원명(ename) 검색
+    -- 아니다 : not 부정 연산자, !=, <>
+
+    SQL> select ename, deptno from emp where deptno != 10;
+
+        ENAME                    DEPTNO
+        -------------------- ----------
+        SMITH                        20
+        ALLEN                        30
+        WARD                         30
+        JONES                        20
+        MARTIN                       30
+        BLAKE                        30
+        TURNER                       30
+        JAMES                        30
+        FORD                         20
+
+
+
+13. sal이 2000 이하(sal<=2000)이거나(or) 3000이상인(sal>=3000) 사원명(ename) 검색
+
+    SQL> select ename, sal from emp where sal<=2000 or sal>=3000 order by sal desc;
+
+        ENAME                       SAL
+        -------------------- ----------
+        KING                       5000
+        FORD                       3000
+        ALLEN                      1600
+        TURNER                     1500
+        MILLER                     1300
+        WARD                       1250
+        MARTIN                     1250
+        JAMES                       950
+        SMITH                       800
+
+
+
+14. comm이 300 or 500 or 1400인 사원명, comm 검색
+    -- in 연산자 활용
+
+    SQL> select ename, comm from emp where comm in (300, 500, 1400);
+
+        ENAME                      COMM
+        -------------------- ----------
+        ALLEN                       300
+        WARD                        500
+        MARTIN                     1400
+
+
+15. ?comm이 300 or 500 or 1400이 아닌(not) 사원명, comm 검색
+
+    SQL> select ename, comm from emp where not comm in (300, 500, 1400);
+
+        ENAME                      COMM
+        -------------------- ----------
+        TURNER                        0
+
+
+
+16. 81년도에 입사한 사원 이름 검색
+	-- * oracle db 날짜타입인 date 타입은 대소비교 가능, 값 표현시 ' ' 처리
+	-- 함수로 포멧 변경 예정
+	-- 81년 1월 1일 ~ 81년 12월 31일까지 범위 
+	-- oracle의 date 타입도 대소 비교 연산자 적용 
+    -- between ~ and
+
+    SQL> select * from emp where hiredate between '81/01/01' and '81/12/31' order by hiredate asc;
+
+            EMPNO ENAME                JOB                       MGR HIREDATE        SAL       COMM     DEPTNO
+        ---------- -------------------- ------------------ ---------- -------- ---------- ---------- ----------
+            7499 ALLEN                SALESMAN                 7698 81/02/20       1600        300         30
+            7521 WARD                 SALESMAN                 7698 81/02/22       1250        500         30
+            7566 JONES                MANAGER                  7839 81/04/02       2975                    20
+            7698 BLAKE                MANAGER                  7839 81/05/01       2850                    30
+            7782 CLARK                MANAGER                  7839 81/06/09       2450                    10
+            7844 TURNER               SALESMAN                 7698 81/09/08       1500          0         30
+            7654 MARTIN               SALESMAN                 7698 81/09/28       1250       1400         30
+            7839 KING                 PRESIDENT                     81/11/17       5000                    10
+            7902 FORD                 ANALYST                  7566 81/12/03       3000                    20
+            7900 JAMES                CLERK                    7698 81/12/03        950                    30
+
+
+17. ename이 M으로 시작되는 모든 사원번호, 이름 검색  
+    -- 연산자 like : 한음절 _ , 음절 개수 무관하게 검색할 경우 %
+
+    SQL> select * from emp where ename like 'M%';
+
+
+            EMPNO ENAME                JOB                       MGR HIREDATE        SAL       COMM     DEPTNO
+        ---------- -------------------- ------------------ ---------- -------- ---------- ---------- ----------
+            7654 MARTIN               SALESMAN                 7698 81/09/28       1250       1400         30
+            7934 MILLER               CLERK                    7782 82/01/23       1300                    10
+
+    SQL> select * from emp where ename like 'M__';
+
+        no rows selected
+
+
+
+18. ename이 M으로 시작되는 전체 자리수가 두음절의 사원번호, 이름 검색
+
+    SQL> select empno, ename from emp where ename like 'M_';
+
+        no rows selected
+
+
+19. 두번째 음절의 단어가 M인 모든 사원명 검색 
+
+    SQL> select * from emp where ename like '_M%';
+
+        EMPNO ENAME                JOB                       MGR HIREDATE        SAL       COMM     DEPTNO
+    ---------- -------------------- ------------------ ---------- -------- ---------- ---------- ----------
+        7369 SMITH                CLERK                    7902 80/12/17        800                    20
+
+20. 단어가 M을 포함한 모든 사원명 검색 
+
+    SQL> select * from emp where ename like '%M%' order by ename;
+
+            EMPNO ENAME                JOB                       MGR HIREDATE        SAL       COMM     DEPTNO
+        ---------- -------------------- ------------------ ---------- -------- ---------- ---------- ----------
+            7900 JAMES                CLERK                    7698 81/12/03        950                    30
+            7654 MARTIN               SALESMAN                 7698 81/09/28       1250       1400         30
+            7934 MILLER               CLERK                    7782 82/01/23       1300                    10
+            7369 SMITH                CLERK                    7902 80/12/17        800                    20
