@@ -1,0 +1,280 @@
+단일행 함수 : 입력 데이터 수만큼 출력 데이터
+
+Oracle DB 자체적인 지원 함수 다수 존재
+    - 숫자
+    - 문자
+    - 날짜
+    - ...
+
+    SQL> select count(*) from dept;
+            - 숫자 세기
+
+    SQL> select length(dname) from dept;
+            - 네임 길이
+
+    SQL> select lengthb(dname) from dept;
+            - 네임 길이 byte
+
+    sum = 합계 / 그룹 함수
+
+<오라클 dumy table 검색>
+
+-- dumy table : 산술 연산 결과등을 확인하기 위한 임시 table
+
+    SQL> select * from dual;
+
+        DU
+        --
+        X
+
+    SQL>  select 2+3 from dual;
+
+               2+3
+        ----------
+                 5
+
+    SQL> select sysdate from dual;
+
+        SYSDATE
+        --------
+        18/11/26
+    
+
+
+함수 개념
+1. 주 용도 : 기능이 이미 구현된 재사용 가능한 로직
+2. abs() 함수로 함수들 이해하기
+    - abs() : 숫자값을 절대값으로 전환해서 값을 호출한 곳을 전송(응답, 리턴)
+            : 필요한 정보 -> 가공 -> 숫자값을 반환
+
+-- 1. 절대값 구하는 함수 : abs()
+    SQL> select -2, abs(-2) from dual;
+
+                -2    ABS(-2)
+        ---------- ----------
+                -2          2
+
+-- 2.반올림 구하는 함수 : round(데이터[반올림 자릿수])
+
+    SQL> select 34, 53, round(34,53) from emp;
+
+                34         53 ROUND(34,53)
+        ---------- ---------- ------------
+                34         53           34
+                34         53           34
+                34         53           34
+                34         53           34
+                34         53           34
+                34         53           34
+                34         53           34
+                34         53           34
+                34         53           34
+                34         53           34
+                34         53           34
+                34         53           34
+
+    SQL> select 34.5653, round(345.653, 1) from dual;
+
+            34.5653    ROUND(345.653,1)
+            ---------- ----------------
+            34.5653              345.7
+
+-- 3. 지정한 자리수 이하 버리는 함수 : trunc(,)
+-- trunc(데이터, 자릿수)
+-- 지릿수 : +(소수점 이하), -(정수 의미)
+-- 참고 : 존재하는 table의 데이터만 삭제 방법 : delete[복원]/truncate[복원 불가]
+
+    SQL> select 34.53, trunc(34.53) from dual;
+
+            34.53  TRUNC(34.53)
+        ---------- ------------
+            34.53           34
+
+-- 4. 나누고 난 나머지 값 연산 함수 : mod( , )
+-- 모듈러스 연산자, %표기로 연산, 오라클에선 mod() 함수명 사용
+
+    SQL> select mod(17,3) from dual;
+
+         MOD(17,3)
+        ----------
+                2 
+
+-- 5. emp talbe에서 사번이 홀수인 사원의 이름, 사번 검색
+
+    SQL> select ename, empno from emp where mod(empno,2)=1;
+
+        ENAME                     EMPNO
+        -------------------- ----------
+        SMITH                      7369
+        ALLEN                      7499
+        WARD                       7521
+        KING                       7839
+
+    SQL> select ename, empno from emp where mod(empno,2)!=0;
+
+        ENAME                     EMPNO
+        -------------------- ----------
+        SMITH                      7369
+        ALLEN                      7499
+        WARD                       7521
+        KING                       7839
+
+-- 6. 제곱수 구하는 함수 : power('제곱할수','몇 제곱')
+
+    SQL> select power(3,2)from dual;
+
+        POWER(3,2)
+        ----------
+                9
+
+    SQL> select power(3,3)from dual;
+
+        POWER(3,3)
+        ----------
+                27
+
+
+
+문자 함수
+
+  대문자 : upper
+  소문자 : lower
+  철자 : case
+
+-- 1. 대문자로 변화 시키는 함수
+        upper() : 대문자 [uppercase]
+        lower() : 소문자 [lowercase]
+
+    SQL> select 'aBcD', upper('aBcD') as 대, lower('aBcD') as 소 from dual;
+
+        'ABCD'   대       소
+        -------- -------- --------
+        aBcD     ABCD     abcd
+
+-- 2. manager로 job 칼럼과 뜻이 일치되는 사원의 사원명 검색하기
+
+    SQL> select ename, job from emp where job = 'MANAGER';
+
+        ENAME                JOB
+        -------------------- ------------------
+        JONES                MANAGER
+        BLAKE                MANAGER
+        CLARK                MANAGER
+
+    MANAGER가 대문자이므로 upper, lower 쓰는것을 비추 한다.
+
+-- 3. 문자열 길이 체크함수 : length()
+        - 참고 사항 : Oracle xe 버전은 단순 교육용 버전, 한글 정석을 2byte, xe버전은 3byte
+
+    SQL> select job, length(job) from emp;
+
+        JOB                LENGTH(JOB)
+        ------------------ -----------
+        CLERK                        5
+        SALESMAN                     8
+        SALESMAN                     8
+        MANAGER                      7
+        SALESMAN                     8
+        MANAGER                      7
+        MANAGER                      7
+        PRESIDENT                    9
+        SALESMAN                     8
+        CLERK                        5
+        ANALYST                      7
+        CLERK                        5
+
+    SQL> select length('가') from dual;
+
+        LENGTH('가')
+        ------------
+                1
+
+-- 4. byte 수 체크 함수 : lengthb()
+
+    SQL> select job, length(job), lengthb(job) from emp;
+
+        JOB                LENGTH(JOB) LENGTHB(JOB)
+        ------------------ ----------- ------------
+        CLERK                        5            5
+        SALESMAN                     8            8
+        SALESMAN                     8            8
+        MANAGER                      7            7
+        SALESMAN                     8            8
+        MANAGER                      7            7
+        MANAGER                      7            7
+        PRESIDENT                    9            9
+        SALESMAN                     8            8
+        CLERK                        5            5
+        ANALYST                      7            7
+        CLERK                        5            5
+
+-- 5. 문바열 일부 추출 함수 : substr('data',시작할위치,'추출할 개수)
+        - 서브 스트링 : 하나의 문자열에서 일부 언어 발췌하는 로직의 표현
+        - sql에서 문자열 1부터 시작 다른 언어에서는 문자열 0부터 시작
+        - 권장 습관 : 프로그램에 sql반영시 DB와 직접 sql 실습후에 문제없는 sql 문장 한해서만 코드에 반영
+
+    SQL> select substr('abcd', 2, 3) from dual;
+
+        SUBSTR
+        ------
+        bcd
+         -> abcd중 2번쨰인 b부터 3개 가 추출되어 출력
+
+-- 6. 년도 구분없이 2월에 입사한 사원이름, 입사일 검색
+        - data 타입에도 substr() 함수 사용 가능
+
+    - 먼저 hiredate를 검색 한다
+    SQL> select hiredate from emp;
+
+        HIREDATE
+        --------
+        80/12/17
+        81/02/20
+        81/02/22
+        81/04/02
+        81/09/28
+        81/05/01
+        81/06/09
+        81/11/17
+        81/09/08
+        81/12/03
+        81/12/03
+        82/01/23
+
+        -> 여기서 2월만을 추출하면 되는데 월은 4번부터 2개만 추출하면 된다.
+
+
+    SQL> select ename, substr(hiredate, 4, 2) 월 from emp;
+
+        ENAME                월
+        -------------------- ----------------
+        SMITH                12
+        ALLEN                02
+        WARD                 02
+        JONES                04
+        MARTIN               09
+        BLAKE                05
+        CLARK                06
+        KING                 11
+        TURNER               09
+        JAMES                12
+        FORD                 12
+        MILLER               01
+
+        -> 우선 사원들이 언제 입사하였는지 확인 가능
+
+    SQL> select ename, substr(hiredate, 4, 2) 월 from emp where substr(hiredate , 4,2) = 02;
+
+        ENAME                월
+        -------------------- ----------------
+        ALLEN                02
+        WARD                 02
+
+-- 7. 문자열 앞뒤에 잉여 여백 제거 함수 : trim()
+
+
+    SQL> select ' abc', length(' abc'), trim(' abc'), length(trim(' abc')) from dual;
+
+        'ABC'    LENGTH('ABC') TRIM(' LENGTH(TRIM('ABC'))
+        -------- ------------- ------ -------------------
+        abc                 4 abc                      3
