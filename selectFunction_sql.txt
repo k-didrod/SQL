@@ -272,9 +272,292 @@ Oracle DB 자체적인 지원 함수 다수 존재
 
 -- 7. 문자열 앞뒤에 잉여 여백 제거 함수 : trim()
 
-
     SQL> select ' abc', length(' abc'), trim(' abc'), length(trim(' abc')) from dual;
 
         'ABC'    LENGTH('ABC') TRIM(' LENGTH(TRIM('ABC'))
         -------- ------------- ------ -------------------
         abc                 4 abc                      3
+
+
+--***[날짜 함수]***--
+
+-- 1. 어제, 오늘, 내일 날짜 검색 ( sysdate )
+
+    SQL> select sysdate-1 as 어제, sysdate as 오늘, sysdate+1 as 내일 from dual;
+
+        어제     오늘     내일
+        -------- -------- --------
+        18/12/23 18/12/24 18/12/25
+
+-- 2. emp table에서 근무일수 계산하기, 사번과 근무일수(반올림) 검색
+
+    SQL> select empno 사번 , round(sysdate-hiredate) 근무일수 from emp;
+
+            사번   근무일수
+        ---------- ----------
+            7369      13888
+            7499      13823
+            7521      13821
+            7566      13782
+            7654      13603
+            7698      13753
+            7782      13714
+            7839      13553
+            7844      13623
+            7900      13537
+            7902      13537
+            7934      13486
+
+-- 3. 특정 개월수 더하는 함수 : add_months(,)
+    -- 6개월 이후 검색
+
+        SQL> select sysdate, add_months(sysdate,6) from dual;
+
+            SYSDATE  ADD_MONT
+            -------- --------
+            18/12/25 19/06/25
+
+-- 4. 입사일 이후 3개월 지난 일수 검색
+
+        SQL> select hiredate 근무일자 , add_months(hiredate,3) 삼개월후 from emp;
+
+            근무일자 삼개월후
+            -------- --------
+            80/12/17 81/03/17
+            81/02/20 81/05/20
+            81/02/22 81/05/22
+            81/04/02 81/07/02
+            81/09/28 81/12/28
+            81/05/01 81/08/01
+            81/06/09 81/09/09
+            81/11/17 82/02/17
+            81/09/08 81/12/08
+            81/12/03 82/03/03
+            81/12/03 82/03/03
+            82/01/23 82/04/23
+
+-- 5. 두 날짜 사이의 개월수 검색 : months_between( , )
+
+    SQL> select sysdate, months_between(sysdate,'2016-09-19') from dual;
+
+        SYSDATE  MONTHS_BETWEEN(SYSDATE,'2016-09-19')
+        -------- ------------------------------------
+        18/12/25                           27.2253543
+
+-- 6. 요일을 기준으로 특정 날짜 검색 : next_day( , )
+
+    SQL> select sysdate, next_day(sysdate, '토요일') from dual;
+
+        SYSDATE  NEXT_DAY
+        -------- --------
+        18/12/25 18/12/29
+
+-- 7. 주어진 날짜를 기준으로 해당 달의 가장 마지막 날짜 : last_day( , )
+
+    SQL> select last_day(sysdate)from dual;
+
+        LAST_DAY
+        --------
+        18/12/31
+
+-- 8. 2016년 2월의 마지막 날짜는?
+
+    SQL> select last_day('2016/02/01') from dual;
+
+        LAST_DAY
+        --------
+        16/02/29
+
+--***[형변환 함수]***--
+-- 사용 빈도가 높음
+
+-- [1] to_char() : 날짜 -> 문자, 숫자 -> 문자 / 숫자를 문자형으로 변환
+    ex) to_char(날짜데이터, '희망 포멧 문자열')
+
+    -- 1. 오늘 날짜를 'yyyy-mm-dd' 변환
+
+        SQL> select to_char(sysdate, 'yyyy-mm-dd') 날짜  from dual;
+
+            날짜
+            --------------------
+            2018-12-25
+
+    -- 2. 요일 출력
+        SQL> select to_char(sysdate, 'yyyy-mm-dd (dy)') 날짜  from dual;
+
+            날짜
+            ----------------------------------
+            2018-12-25 (화)
+
+    -- 3. 12시간 기준 출력
+        
+        SQL> select to_char(sysdate,'yyyy-mm-dd hh:mi:ss') 날짜및시간 from dual;
+
+            날짜및시간
+            --------------------------------------
+            2018-12-25 11:49:42
+
+    -- 4. 24시간 기준 출력
+
+        SQL> select to_char(sysdate,'yyyy-mm-dd hh24:mi:ss') 날짜및시간 from dual;
+
+            날짜및시간
+            --------------------------------------
+            2018-12-25 23:52:05
+
+    -- 5. am, pm 오전 오후 의미, am을 주로 사용
+
+        SQL> select to_char(sysdate,'yyyy-mm-dd hh:mi:ss am') 날짜및시간 from dual;
+
+            날짜및시간
+            ----------------------------------------------------
+            2018-12-25 11:52:51 오후
+
+    -- 6. round() : 정오를 기준으로 이 시간 초과시 무조건 다음 날짜
+          trunc() : 24시간 내의 모든 내용 당일 처리
+
+        SQL> select sysdate 오늘 , round(sysdate) 다음날 ,trunc(sysdate) 당일  from dual;
+
+            오늘     다음날   당일
+            -------- -------- --------
+            18/12/25 18/12/26 18/12/25
+
+    -- 7. 숫자를 원하는 형식으로 변환 검색
+        -- 9 : 실제 데이터의 유효한 자릿수 숫자 의미(자릿수 채우지 않음)
+        -- 0 :	 "		(자릿수 채움)
+        -- . : 소수점 표현
+        -- , : 원단위 표현
+        -- $ : 달러 
+        -- L or l : 로케일의 줄임말(os 자체의 인코딩 기본 정보로 해당 언어의 기본 통화표현)
+
+        SQL> select to_char(1234, '9999.99') from dual;
+
+            TO_CHAR(1234,'99
+            ----------------
+            1234.00
+
+        SQL> select to_char(1234, '$9999,99') from dual;
+
+            TO_CHAR(1234,'$999
+            ------------------
+            $12,34
+
+        SQL> select to_char(1234, '9999') from dual;
+
+            TO_CHAR(12
+            ----------
+            1234
+            
+        SQL> select to_char(1234, '999,999') from dual;
+
+            TO_CHAR(1234,'99
+            ----------------
+            1,234
+
+        SQL> select to_char(1234, '99999') from dual;
+
+            TO_CHAR(1234
+            ------------
+            1234  
+
+        SQL> select to_char(1234, '00000') from dual;
+
+            TO_CHAR(1234
+            ------------
+            01234
+
+        SQL> select to_char(1234, 'L99,999') from dual;
+
+            TO_CHAR(1234,'L99,999')
+            ----------------------------------
+                    ￦1,234
+
+        SQL> select to_char(1234, 'l99,999') from dual;
+
+            TO_CHAR(1234,'L99,999')
+            ----------------------------------
+                    ￦1,234
+
+-- [2] to_date() : 날짜로 변경 시키는 함수
+
+    -- 1. 올해 며칠이 지났는지 검색(포멧 yyyy/mm/dd)
+
+        SQL> select sysdate-to_date(20160101, 'yyyy/mm/dd') from dual;
+
+            SYSDATE-TO_DATE(20160101,'YYYY/MM/DD')
+            --------------------------------------
+                                        1090.00444
+
+    -- 2. 문자열로 date 타입 검색 가능 [데이터 값 표현이 유연함]
+        -- 1980년 12월 17일날입사한 직원명
+
+                SQL> select * from emp where hiredate = '80/12/17';
+
+                        EMPNO ENAME                JOB                       MGR HIREDATE        SAL       COMM     DEPTNO
+                    ---------- -------------------- ------------------ ---------- -------- ---------- ---------- ----------
+                        7369 SMITH                CLERK                    7902 80/12/17        800                    20
+
+-- [3] to_number() : 문자열을 숫자로 변환
+
+    -- 1. '20,000'의 데이터에서 '10,000' 산술 연산하기
+
+        SQL> select to_char(to_number('20,000','99,999')-to_number('10,000','99,999'),'99,999') as 산술  from dual;
+
+            산술
+            --------------
+            10,000
+
+--*** 조건식 함수 ***--
+-- decode()-if or switch 문과 같은 함수
+-- decode(조건 칼럼, 조건값1, 출력 데이터1 조건값2, 출력데이터2 .... default값) from 테이블명;
+
+-- 1. deptno에 따른 출력 데이터
+
+        SQL> select deptno, decode(deptno,10, 'A',20, 'B','무') from dept;
+
+                DEPTNO DECODE
+            ---------- ------
+                    10 A
+                    20 B
+                    30 무
+                    40 무
+
+-- 2. emp table의 연봉(sal) 인상 계산하기
+    -- job이 ANALYST 5%인상, SALESMAN은 10% 인상, MANAGER는 15%, CLERK 20% 이상 
+        
+        SQL> select job, sal, decode(job, 'ANALYST', sal*1.05, 'SALESMAN',  sal*1.1, 'MANAGER', sal*1.15, 'CLERK', sal*1.2 ) as 인상분 from emp;
+
+            JOB                       SAL     인상분
+            ------------------ ---------- ----------
+            CLERK                     800        960
+            SALESMAN                 1600       1760
+            SALESMAN                 1250       1375
+            MANAGER                  2975    3421.25
+            SALESMAN                 1250       1375
+            MANAGER                  2850     3277.5
+            MANAGER                  2450     2817.5
+            PRESIDENT                5000
+            SALESMAN                 1500       1650
+            CLERK                     950       1140
+            ANALYST                  3000       3150
+            CLERK                    1300       1560
+
+--3. 'MANAGER'인 직군은 '갑', 'ANALYST' 직군은 '을', 나머지는 '병'으로 검색
+    -- 검색 데이터 ename, job, 갑?을?병? 검색 
+
+    SQL> select job, ename, decode(job, 'ANALYST', '을', 'MANAGER', '갑', '병')from emp;
+
+        JOB                ENAME                DECODE
+        ------------------ -------------------- ------
+        CLERK              SMITH                병
+        SALESMAN           ALLEN                병
+        SALESMAN           WARD                 병
+        MANAGER            JONES                갑
+        SALESMAN           MARTIN               병
+        MANAGER            BLAKE                갑
+        MANAGER            CLARK                갑
+        PRESIDENT          KING                 병
+        SALESMAN           TURNER               병
+        CLERK              JAMES                병
+        ANALYST            FORD                 을
+        CLERK              MILLER               병
